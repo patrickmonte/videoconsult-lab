@@ -1,40 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const PatientForm = ({ onSuccess }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    birthdate: '',
-    document: '',
-    documentText: '',
-  });
-  const [loading, setLoading] = useState(false);
+const EditPatient = ({ patientId }) => {
+  const [formData, setFormData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetch(`/api/patients/${patientId}`)
+      .then(res => res.json())
+      .then(data => {
+        setFormData(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError('Erro ao carregar dados do paciente.');
+        setLoading(false);
+      });
+  }, [patientId]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-  
-  const handleDocumentText = (text) => {
-    setFormData((prev) => ({ ...prev, documentText: text }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess(false);
     try {
-      const response = await fetch('/api/patients', {
-        method: 'POST',
+      const response = await fetch(`/api/patients/${patientId}`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
       if (response.ok) {
-        alert('Cadastro realizado com sucesso!');
-        if (onSuccess) onSuccess();
+        setSuccess(true);
       } else {
-        setError('Erro ao cadastrar. Verifique os dados.');
+        setError('Erro ao atualizar dados.');
       }
     } catch {
       setError('Erro de conexão.');
@@ -42,9 +45,12 @@ const PatientForm = ({ onSuccess }) => {
     setLoading(false);
   };
 
+  if (loading) return <div>Carregando...</div>;
+  if (!formData) return <div>Paciente não encontrado.</div>;
+
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-6 rounded shadow-md">
-      <h2 className="text-2xl font-bold mb-4 text-center">Pré-cadastro do Paciente</h2>
+    <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-6 rounded shadow-md mt-8">
+      <h2 className="text-2xl font-bold mb-4 text-center">Editar Paciente</h2>
       <div className="mb-4">
         <label className="block text-gray-700 font-semibold">Nome Completo</label>
         <input type="text" name="name" value={formData.name} onChange={handleChange} required className="w-full px-3 py-3 border rounded text-lg" />
@@ -63,24 +69,15 @@ const PatientForm = ({ onSuccess }) => {
       </div>
       <div className="mb-4">
         <label className="block text-gray-700 font-semibold">Data de Nascimento</label>
-        <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} required className="w-full px-3 py-3 border rounded text-lg" />
-      </div>
-      <div className="mb-4">
-        <label className="block mb-1 font-semibold">Upload de documento (opcional)</label>
-        <DocumentScanner onTextExtracted={handleDocumentText} />
-        {formData.documentText && (
-          <div className="mt-2 p-2 bg-gray-100 rounded">
-            <span className="font-semibold">Texto extraído:</span>
-            <pre className="text-xs whitespace-pre-wrap">{formData.documentText}</pre>
-          </div>
-        )}
+        <input type="date" name="birthDate" value={formData.birthDate?.slice(0,10)} onChange={handleChange} required className="w-full px-3 py-3 border rounded text-lg" />
       </div>
       {error && <div className="text-red-600 mb-2 text-center">{error}</div>}
+      {success && <div className="text-green-600 mb-2 text-center">Dados atualizados com sucesso!</div>}
       <button type="submit" className="bg-blue-600 text-white w-full py-3 rounded text-xl font-bold mt-2" disabled={loading}>
-        {loading ? 'Enviando...' : 'Cadastrar'}
+        {loading ? 'Salvando...' : 'Salvar Alterações'}
       </button>
     </form>
   );
 };
 
-export default PatientForm;
+export default EditPatient;

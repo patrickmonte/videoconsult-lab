@@ -117,3 +117,72 @@ npm test
 - Para deploy integrado, utilize ferramentas como Docker Compose para orquestrar frontend, backend e banco de dados.
 
 Dúvidas ou sugestões: patrickmonte
+
+---
+
+## 10. Exemplos para Deploy Cloud, CI/CD e HTTPS
+
+### Deploy Cloud (Vercel/Netlify para Frontend)
+- Faça build do frontend:
+	```bash
+	cd frontend
+	npm run build
+	```
+- Faça upload da pasta `build/` para Vercel, Netlify ou outro serviço estático.
+- Configure a variável de ambiente `REACT_APP_API_URL` se necessário.
+
+### Deploy Backend (Heroku, Railway, Render)
+- Crie um projeto e conecte o repositório.
+- Configure variáveis de ambiente (`MONGO_URI`, `JWT_SECRET`, `PORT`).
+- O serviço detecta automaticamente o `backend/Dockerfile` ou `server.js`.
+
+### HTTPS com Nginx (Exemplo)
+```nginx
+server {
+		listen 443 ssl;
+		server_name seu_dominio.com;
+		ssl_certificate /etc/letsencrypt/live/seu_dominio.com/fullchain.pem;
+		ssl_certificate_key /etc/letsencrypt/live/seu_dominio.com/privkey.pem;
+
+		location /api/ {
+				proxy_pass http://backend:5000/api/;
+				proxy_set_header Host $host;
+				proxy_set_header X-Real-IP $remote_addr;
+				proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+				proxy_set_header X-Forwarded-Proto $scheme;
+		}
+		location / {
+				root   /usr/share/nginx/html;
+				try_files $uri /index.html;
+		}
+}
+```
+- Use [Let's Encrypt](https://letsencrypt.org/) para certificados gratuitos.
+
+### CI/CD (GitHub Actions)
+Exemplo de workflow `.github/workflows/ci.yml`:
+```yaml
+name: CI
+on:
+	push:
+		branches: [main]
+jobs:
+	build-and-test:
+		runs-on: ubuntu-latest
+		services:
+			mongo:
+				image: mongo:6
+				ports: [27017:27017]
+		steps:
+			- uses: actions/checkout@v3
+			- name: Backend install & test
+				run: |
+					cd backend
+					npm install
+					npm test
+			- name: Frontend install & test
+				run: |
+					cd frontend
+					npm install
+					npm test
+```

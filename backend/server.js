@@ -11,6 +11,7 @@ app.use(express.json());
 app.use('/api/patients', require('./routes/patients'));
 app.use('/api/appointments', require('./routes/appointments'));
 app.use('/api/exams', require('./routes/exams'));
+app.use('/api/chat', require('./routes/chat'));
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/videoconsult-lab';
