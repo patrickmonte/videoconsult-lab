@@ -1,7 +1,7 @@
 
+
 # Instruções de Execução — Videoconsulta Laboratorial
 
-## Pré-requisitos
 - Node.js 18+
 - MongoDB em execução local ou remoto
 
@@ -218,3 +218,55 @@ jobs:
 					npm install
 					npm test
 ```
+
+## Exemplos de Login e Perfis de Teste
+
+Para facilitar a validação e demonstração do sistema, utilize os exemplos abaixo:
+
+### Paciente de Teste
+- **E-mail:** paciente@teste.com
+- **CPF:** 12345678900
+
+### Atendente de Teste
+- **E-mail:** atendente@teste.com
+- **CPF:** 11122233344
+
+### Médico de Teste
+- **E-mail:** medico@teste.com
+- **CPF:** 99988877766
+
+> Cadastre esses perfis manualmente na tela de pré-cadastro ou via API, caso ainda não existam no banco.
+
+## Prints e Demonstração Visual
+
+Para inserir prints na documentação:
+- Acesse o sistema pelo navegador (http://localhost:3000)
+- Realize o fluxo desejado (cadastro, agendamento, videochamada, painel)
+- Utilize a ferramenta de captura de tela do seu sistema operacional
+- Salve as imagens na pasta `frontend/public/prints` (crie se necessário)
+- Para adicionar prints nesta documentação, utilize:
+	```markdown
+	![Descrição do print](frontend/public/prints/nome-da-imagem.png)
+	```
+
+Exemplo:
+```markdown
+![Tela de login](frontend/public/prints/login.png)
+```
+
+Inclua prints das principais telas para facilitar a avaliação e apresentação do sistema.
+## Visualização e Acesso ao Sistema
+
+Após rodar o script `./run-validate.sh`, o sistema estará disponível para navegação e testes:
+
+- **Frontend:** http://localhost:3000  
+	Interface web para pacientes, médicos e atendentes. Permite pré-cadastro, agendamento, videochamada, chat, upload de documentos e acesso ao painel administrativo.
+- **Backend (API):** http://localhost:5000/api  
+	Endpoints REST para integração e testes.
+
+### Como navegar
+- Acesse o endereço do frontend no navegador.
+- Utilize as opções de cadastro, login, agendamento e painel conforme o perfil.
+- Para testes automatizados, consulte a saída do script ou execute manualmente `npm test` nos diretórios `backend` e `frontend`.
+
+Consulte este arquivo para detalhes de deploy, integração, segurança e exemplos de uso.
