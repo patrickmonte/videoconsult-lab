@@ -149,32 +149,47 @@ Dúvidas ou sugestões: patrickmonte
 - Configure variáveis de ambiente (`MONGO_URI`, `JWT_SECRET`, `PORT`).
 - O serviço detecta automaticamente o `backend/Dockerfile` ou `server.js`.
 
-### HTTPS com Nginx (Exemplo)
-# Recomendações de Segurança
-- Sempre utilize HTTPS em produção
+
+### HTTPS em Produção (Obrigatório)
+
+> **Atenção:** O uso de HTTPS é obrigatório em produção para garantir a privacidade dos dados dos pacientes e a conformidade com a LGPD. Nunca disponibilize o sistema em produção usando apenas HTTP.
+
+#### Recomendações de Segurança
+- Sempre utilize HTTPS em produção (Nginx, Apache ou serviço cloud)
+- Redirecione automaticamente todas as conexões HTTP para HTTPS
+- Utilize certificados válidos (ex: [Let's Encrypt](https://letsencrypt.org/))
 - Garanta consentimento explícito para gravação de vídeo
 - Siga as melhores práticas de LGPD
+
+#### Exemplo de configuração Nginx com redirecionamento obrigatório para HTTPS:
 ```nginx
 server {
-		listen 443 ssl;
-		server_name seu_dominio.com;
-		ssl_certificate /etc/letsencrypt/live/seu_dominio.com/fullchain.pem;
-		ssl_certificate_key /etc/letsencrypt/live/seu_dominio.com/privkey.pem;
+	listen 80;
+	server_name seu_dominio.com;
+	return 301 https://$host$request_uri;
+}
 
-		location /api/ {
-				proxy_pass http://backend:5000/api/;
-				proxy_set_header Host $host;
-				proxy_set_header X-Real-IP $remote_addr;
-				proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-				proxy_set_header X-Forwarded-Proto $scheme;
-		}
-		location / {
-				root   /usr/share/nginx/html;
-				try_files $uri /index.html;
-		}
+server {
+	listen 443 ssl;
+	server_name seu_dominio.com;
+	ssl_certificate /etc/letsencrypt/live/seu_dominio.com/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/seu_dominio.com/privkey.pem;
+
+	location /api/ {
+		proxy_pass http://backend:5000/api/;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+	}
+	location / {
+		root   /usr/share/nginx/html;
+		try_files $uri /index.html;
+	}
 }
 ```
-- Use [Let's Encrypt](https://letsencrypt.org/) para certificados gratuitos.
+
+> **Dica:** Sempre teste o acesso externo e verifique se o cadeado aparece no navegador. Não utilize certificados autoassinados em produção.
 
 ### CI/CD (GitHub Actions)
 Exemplo de workflow `.github/workflows/ci.yml`:

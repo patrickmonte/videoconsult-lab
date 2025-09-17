@@ -12,6 +12,8 @@ const VideoCall = ({ roomId = 'default-room', sender = 'patient' }) => {
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [recordedUrl, setRecordedUrl] = useState(null);
   const [screenSharing, setScreenSharing] = useState(false);
+  const [showConsent, setShowConsent] = useState(false);
+  const [consentGiven, setConsentGiven] = useState(false);
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const screenStreamRef = useRef(null);
@@ -55,9 +57,14 @@ const VideoCall = ({ roomId = 'default-room', sender = 'patient' }) => {
     }
   };
 
-  // Gravação
+
+  // Gravação com consentimento
   const handleRecord = () => {
     if (!recording && localStream) {
+      if (!consentGiven) {
+        setShowConsent(true);
+        return;
+      }
       const recorder = new window.MediaRecorder(localStream);
       setMediaRecorder(recorder);
       const chunks = [];
@@ -71,6 +78,14 @@ const VideoCall = ({ roomId = 'default-room', sender = 'patient' }) => {
     } else if (mediaRecorder) {
       mediaRecorder.stop();
       setRecording(false);
+    }
+  };
+
+  const handleConsent = (agree) => {
+    setShowConsent(false);
+    if (agree) {
+      setConsentGiven(true);
+      setTimeout(() => handleRecord(), 100); // chama novamente para iniciar gravação
     }
   };
 
@@ -113,6 +128,18 @@ const VideoCall = ({ roomId = 'default-room', sender = 'patient' }) => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
+      {showConsent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+            <h2 className="text-xl font-bold mb-4">Consentimento para Gravação</h2>
+            <p className="mb-4">Para proteger sua privacidade e cumprir a LGPD, é necessário consentimento explícito para gravar esta consulta. Você autoriza a gravação de áudio e vídeo desta chamada?</p>
+            <div className="flex justify-end space-x-4">
+              <button onClick={() => handleConsent(false)} className="bg-gray-300 px-4 py-2 rounded">Não autorizo</button>
+              <button onClick={() => handleConsent(true)} className="bg-blue-600 text-white px-4 py-2 rounded">Autorizo</button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex-grow relative flex">
         <div className="flex-1 relative">
           <video ref={localVideoRef} autoPlay muted className="absolute top-4 left-4 w-48 h-36 object-cover rounded-lg border-4 border-blue-300" />
