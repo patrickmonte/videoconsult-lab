@@ -1,19 +1,3 @@
-# Sistema de Vídeoconferência para Atendimento de Exames Laboratoriais
-
-## Visão Geral
-Este sistema permite que pacientes façam pré-cadastro e realizem atendimentos iniciais para pedidos de exames laboratoriais via vídeoconferência. Durante a chamada, o paciente pode apresentar sua guia de exames, que será lida por câmera ou scanner integrado.
-
-## Tecnologias Utilizadas
-- **Frontend**: React.js + Tailwind CSS
-- **Backend**: Node.js + Express
-- **Banco de Dados**: MongoDB
-- **Comunicação em Tempo Real**: WebRTC
-- **Reconhecimento de Texto**: Tesseract.js (OCR)
-- **Autenticação**: JWT
-
-## Estrutura do Projeto
-
-```
 videoconsult-lab/
 ├── frontend/
 │   ├── public/
@@ -45,9 +29,99 @@ videoconsult-lab/
 │   │   └── Exam.js
 │   └── server.js
 └── package.json
+
+# Sistema de Videoconsulta Laboratorial
+
+## Visão Geral
+Plataforma completa para atendimento remoto de exames laboratoriais, com pré-cadastro, agendamento, vídeochamada, chat, upload/OCR de documentos, painel administrativo, notificações e relatórios exportáveis.
+
+## Principais Funcionalidades
+- Pré-cadastro e edição de pacientes
+- Agendamento inteligente de consultas (evita conflitos, confirmações por e-mail/SMS)
+- Sala de vídeochamada com:
+  - Chat textual integrado
+  - Compartilhamento de tela
+  - Upload e OCR de documentos (Tesseract.js)
+  - Gravação opcional (apenas atendente)
+  - Interface adaptada para paciente e atendente
+- Painel administrativo (atendente/médico):
+  - Abas para consultas, pacientes, exames, notificações e relatórios
+  - Filtros, exportação CSV, histórico detalhado
+  - Visualização e navegação rápida entre pacientes, exames e consultas
+- Notificações automáticas (e-mail/SMS)
+- Segurança: autenticação JWT, recomendações de HTTPS, consentimento para gravação
+
+## Tecnologias Utilizadas
+- **Frontend**: React.js, Tailwind CSS, WebRTC, Tesseract.js
+- **Backend**: Node.js, Express, MongoDB, JWT, Nodemailer, Twilio
+
+## Estrutura do Projeto
+```
+videoconsult-lab/
+  frontend/
+    src/
+      components/
+        VideoCall.js
+        PatientForm.js
+        DocumentScanner.js
+        Chat.js
+      pages/
+        Appointment.js
+        CallRoom.js
+        attendant/
+          Dashboard.js
+          PatientList.js
+          PatientHistory.js
+          ChatRoom.js
+          ExamRequest.js
+      App.js
+  backend/
+    models/
+      Patient.js
+      Appointment.js
+      Exam.js
+      ChatMessage.js
+    routes/
+      patients.js
+      appointments.js
+      exams.js
+      chat.js
+    controllers/
+      notificationController.js
+      smsController.js
+    middleware/
+      auth.js
+    server.js
+  docker-compose.yml
+  README.md
+  INSTRUCOES.md
 ```
 
-## Implementação Detalhada
+## Fluxo do Usuário
+1. Paciente realiza pré-cadastro e agenda consulta
+2. Recebe confirmação (e-mail/SMS)
+3. Acessa sala de vídeochamada (com chat, upload/OCR, compartilhamento de tela)
+4. Atendente pode gravar a consulta (com consentimento)
+5. Após consulta, exames e histórico ficam disponíveis no painel
+
+## Painel Administrativo
+- Abas: Consultas, Pacientes, Exames, Notificações, Relatórios
+- Filtros por data/status, exportação CSV
+- Acesso rápido ao histórico do paciente, chat e sala de chamada
+
+## Segurança e Privacidade
+- Autenticação JWT
+- Consentimento para gravação
+- Recomendações de HTTPS e LGPD
+
+## Melhorias Futuras
+- Integração com laboratórios
+- Pagamento online
+- Chat assíncrono pós-consulta
+- IA para análise de exames
+
+## Execução e Deploy
+Veja `INSTRUCOES.md` para detalhes de instalação, execução local, testes, deploy cloud, HTTPS e CI/CD.
 
 ### 1. Pré-Cadastro do Paciente (frontend/src/components/PatientForm.js)
 

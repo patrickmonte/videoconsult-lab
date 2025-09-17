@@ -1,4 +1,5 @@
-# Instruções de Execução do Sistema de Vídeoconsulta Laboratorial
+
+# Instruções de Execução — Videoconsulta Laboratorial
 
 ## Pré-requisitos
 - Node.js 18+
@@ -43,18 +44,28 @@ npm start
 ```
 O frontend estará disponível em `http://localhost:3000`.
 
+
 ## 3. Fluxo de Uso
-- Acesse o frontend e realize o pré-cadastro do paciente.
-- Agende uma vídeoconsulta.
-- Entre na sala de chamada, utilize a câmera e o scanner de documentos.
+- Acesse o frontend e realize o pré-cadastro do paciente
+- Agende uma vídeoconsulta (com confirmação por e-mail/SMS)
+- Entre na sala de chamada:
+	- Utilize a câmera, chat textual, upload/OCR de documentos, compartilhamento de tela
+	- Se for atendente, pode gravar a consulta (com consentimento)
+- Após a consulta, utilize o painel administrativo para:
+	- Visualizar consultas, pacientes, exames, notificações e relatórios exportáveis
+	- Navegar rapidamente entre histórico, chat e sala de chamada
+
 
 ## 4. Observações
-- Certifique-se de que o MongoDB está rodando.
-- O sistema utiliza autenticação JWT para rotas protegidas.
-- Para ambiente de produção, configure HTTPS e variáveis seguras.
+- Certifique-se de que o MongoDB está rodando
+- O sistema utiliza autenticação JWT para rotas protegidas
+- Para produção, configure HTTPS, variáveis seguras e consentimento para gravação
+- O painel administrativo possui abas para consultas, pacientes, exames, notificações e relatórios
+- Apenas o atendente pode gravar a consulta
+
 
 ## 5. Tecnologias
-- React.js, Tailwind CSS, Node.js, Express, MongoDB, WebRTC, Tesseract.js, JWT
+- React.js, Tailwind CSS, Node.js, Express, MongoDB, WebRTC, Tesseract.js, JWT, Nodemailer, Twilio
 
 ## 6. Contato
 ## 7. Deploy em Produção
@@ -109,16 +120,18 @@ cd frontend
 npm test
 ```
 
-## 9. Integração
 
-- O frontend se comunica com o backend via REST (`/api`).
-- Para integração com sistemas externos (laboratórios, SMS, e-mail), utilize APIs e serviços de terceiros.
-- Para autenticação, utilize JWT conforme implementado no backend.
-- Para deploy integrado, utilize ferramentas como Docker Compose para orquestrar frontend, backend e banco de dados.
+## 9. Integração
+- O frontend se comunica com o backend via REST (`/api`)
+- Para integração com sistemas externos (laboratórios, SMS, e-mail), utilize APIs e serviços de terceiros
+- Para autenticação, utilize JWT conforme implementado no backend
+- Para deploy integrado, utilize Docker Compose para orquestrar frontend, backend e banco de dados
+- O painel administrativo permite exportação de relatórios e navegação entre módulos
 
 Dúvidas ou sugestões: patrickmonte
 
 ---
+
 
 ## 10. Exemplos para Deploy Cloud, CI/CD e HTTPS
 
@@ -137,6 +150,10 @@ Dúvidas ou sugestões: patrickmonte
 - O serviço detecta automaticamente o `backend/Dockerfile` ou `server.js`.
 
 ### HTTPS com Nginx (Exemplo)
+# Recomendações de Segurança
+- Sempre utilize HTTPS em produção
+- Garanta consentimento explícito para gravação de vídeo
+- Siga as melhores práticas de LGPD
 ```nginx
 server {
 		listen 443 ssl;
